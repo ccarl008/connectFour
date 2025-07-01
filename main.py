@@ -2,13 +2,17 @@ import random
 
 class ConnectFour:
     def __init__(self):
-        self.possible_letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G']
+        self.possibleLetters = ['A', 'B', 'C','D','E','F', 'G']
+        self.gameBoard = [["","","","","","",""], 
+                         ["","","","","","",""], 
+                         ["","","","","","",""], 
+                         ["","","","","","",""], 
+                         ["","","","","","",""], 
+                         ["","","","","","",""]]
         self.rows = 6
         self.cols = 7
-        self.board = [["" for _ in range(self.cols)] for _ in range(self.rows)]
-        self.turn_counter = 0
-        self.current_player = '🔵'
-        
+        self.turnCounter = 0
+
     def print_welcome(self):
         print("-------------------------------------------------")
         print(r"""
@@ -22,156 +26,153 @@ class ConnectFour:
 ----------------------------------------------------------
 """)
 
-
-possibleLetters = ['A', 'B', 'C','D','E','F', 'G' ]
-gameBoard = [["","","","","","",""], ["","","","","","",""], ["","","","","","",""], ["","","","","","",""], ["","","","","","",""], ["","","","","","",""]]
-
-rows = 6
-cols = 7
-
-def printGameBoard():
-    print("\n     A    B    C    D    E    F    G  ", end = "")
-    for x in range(rows):
+    def printGameBoard(self):
+        print("\n     A    B    C    D    E    F    G  ", end="")
+        for x in range(self.rows):
+            print("\n   +----+----+----+----+----+----+----+")
+            print(x, " |", end="")
+            for y in range(self.cols):
+                if self.gameBoard[x][y] == "🔵":
+                    print("", self.gameBoard[x][y], end=" |")
+                elif self.gameBoard[x][y] == "🔴":
+                    print("", self.gameBoard[x][y], end=" |")
+                else:
+                    print(" ", self.gameBoard[x][y], end="  |")
         print("\n   +----+----+----+----+----+----+----+")
-        print(x, " |", end = "")
-        for y in range(cols):
-            if(gameBoard[x][y] == "🔵"):
-                print("",gameBoard[x][y], end = " |")
-            elif (gameBoard[x][y] == "🔴"):
-                print("",gameBoard[x][y], end = " |")
-            else:
-                print(" ",gameBoard[x][y], end = "  |")
-    print("\n   +----+----+----+----+----+----+----+")
 
-def modifyArray(spacePicked, turn):
-    gameBoard[spacePicked[0]][spacePicked[1]] = turn
+    def modifyArray(self, spacePicked, turn):
+        self.gameBoard[spacePicked[0]][spacePicked[1]] = turn
 
-def checkForWinner(chip):
-    # Check horizontal (row) wins
-    for row in range(rows):
-        for col in range(cols - 3):
-            if (gameBoard[row][col] == chip and 
-                gameBoard[row][col+1] == chip and 
-                gameBoard[row][col+2] == chip and 
-                gameBoard[row][col+3] == chip):
-                print("\nGame over", chip, "wins! Thank you for playing!")
-                return True
-    
-    # Check vertical (column) wins
-    for col in range(cols):
-        for row in range(rows - 3):
-            if (gameBoard[row][col] == chip and 
-                gameBoard[row+1][col] == chip and 
-                gameBoard[row+2][col] == chip and 
-                gameBoard[row+3][col] == chip):
-                print("\nGame over", chip, "wins! Thank you for playing")
-                return True
-
-    # Check diagonal (top-left to bottom-right)
-    for row in range(rows - 3):
-        for col in range(cols - 3):
-            if (gameBoard[row][col] == chip and 
-                gameBoard[row+1][col+1] == chip and 
-                gameBoard[row+2][col+2] == chip and 
-                gameBoard[row+3][col+3] == chip):
-                print("\nGame over", chip, "wins! Thank you for playing")
-                return True
-
-    # Check diagonal (top-right to bottom-left)
-    for row in range(rows - 3):
-        for col in range(3, cols):
-            if (gameBoard[row][col] == chip and 
-                gameBoard[row+1][col-1] == chip and 
-                gameBoard[row+2][col-2] == chip and 
-                gameBoard[row+3][col-3] == chip):
-                print("\nGame over", chip, "wins! Thank you for playing")
-                return True
-    return False
-
-def coordinateParser(inputString):
-    coordinate = [None] * 2
-    if inputString[0].upper() == "A":
-        coordinate[1] = 0
-    elif inputString[0].upper() == "B":
-        coordinate[1] = 1
-    elif inputString[0].upper() == "C":
-        coordinate[1] = 2 
-    elif inputString[0].upper() == "D":
-        coordinate[1] = 3 
-    elif inputString[0].upper() == "E":
-        coordinate[1] = 4 
-    elif inputString[0].upper() == "F":
-        coordinate[1] = 5  
-    elif inputString[0].upper() == "G":
-        coordinate[1] = 6
-    else:
-        print("Invalid Column")
-        return None
-    
-    try:
-        row = int(inputString[1])
-        if row < 0 or row >= rows:
-            print("Invalid Row")
+    def coordinateParser(self, inputString):
+        coordinate = [None] * 2
+        if inputString[0].upper() == "A":
+            coordinate[1] = 0
+        elif inputString[0].upper() == "B":
+            coordinate[1] = 1
+        elif inputString[0].upper() == "C":
+            coordinate[1] = 2 
+        elif inputString[0].upper() == "D":
+            coordinate[1] = 3 
+        elif inputString[0].upper() == "E":
+            coordinate[1] = 4 
+        elif inputString[0].upper() == "F":
+            coordinate[1] = 5  
+        elif inputString[0].upper() == "G":
+            coordinate[1] = 6
+        else:
+            print("Invalid Column")
             return None
-        coordinate[0] = row
-        return coordinate
-    except:
-        print("Invalid Coordinate")
-        return None
+        
+        try:
+            row = int(inputString[1])
+            if row < 0 or row >= self.rows:
+                print("Invalid Row")
+                return None
+            coordinate[0] = row
+            return coordinate
+        except:
+            print("Invalid Coordinate")
+            return None
 
-def isSpaceAvail(intendedCoordinate):
-    if (gameBoard[intendedCoordinate[0]][intendedCoordinate[1]] == '🔴'):
+    def isSpaceAvailable(self, intendedCoordinate):
+        if (self.gameBoard[intendedCoordinate[0]][intendedCoordinate[1]] == '🔴'):
+            return False
+        elif (self.gameBoard[intendedCoordinate[0]][intendedCoordinate[1]] == '🔵'):
+            return False
+        else:
+            return True
+
+    def gravityChecker(self, intendedCoordinate):
+        spaceBelow = [None] * 2
+        spaceBelow[0] = intendedCoordinate[0] + 1
+        spaceBelow[1] = intendedCoordinate[1]
+
+        if spaceBelow[0] == 6:
+            return True
+        
+        if not self.isSpaceAvailable(spaceBelow):
+            return True
         return False
-    elif (gameBoard[intendedCoordinate[0]][intendedCoordinate[1]] == '🔵'):
-        return False
-    else:
-        #print("Space is available")
-        return True
 
-def gravityChecker(intendedCoordinate):
-    # Caluclate space below
-    spaceBelow = [None] * 2
-    spaceBelow[0] = intendedCoordinate[0] + 1
-    spaceBelow[1] = intendedCoordinate[1]
-
-    # Is coordinate at ground level
-    if(spaceBelow[0] == 6):
-        #print("Gravity satisfied")
-        return True
-    
-    # Check if there is a token below
-    if(isSpaceAvail(spaceBelow) == False):
-        return True
-    return False
-
-turnCounter = 0
-while True:
-    if(turnCounter % 2 == 0):
-        printGameBoard()
+    def humanTurn(self):
         while True:
             spacePicked = input("\nChoose a space: ")
-            coordinate = coordinateParser(spacePicked)
-            try:
-                # Check if space is avail
-                if(isSpaceAvail(coordinate) and gravityChecker(coordinate)):
-                    modifyArray(coordinate, '🔵')
-                    break
-                else:
-                    print("Not a valid coordinate")
-            except:
-                print("Please try again.")
-        winner = checkForWinner('🔵')
-        turnCounter += 1
-    # It's the computers turn
-    else:
+            coordinate = self.coordinateParser(spacePicked)
+            if coordinate and self.isSpaceAvailable(coordinate) and self.gravityChecker(coordinate):
+                self.modifyArray(coordinate, '🔵')
+                return True
+            print("Not a valid coordinate")
+
+    def computerTurn(self):
         while True:
-            cpuChoice = [random.choice(possibleLetters), random.randint(0,5)]
-            cpuCoordinate = coordinateParser(cpuChoice)
-            if(isSpaceAvail(cpuCoordinate) and gravityChecker(cpuCoordinate)):
-                modifyArray(cpuCoordinate, '🔴')
-                break
-        turnCounter += 1
-        winner = checkForWinner('🔴')
-    if(winner):
-        printGameBoard
-        break
+            cpuChoice = [random.choice(self.possibleLetters), random.randint(0,5)]
+            cpuCoordinate = self.coordinateParser("".join(map(str, cpuChoice)))
+            if cpuCoordinate and self.isSpaceAvailable(cpuCoordinate) and self.gravityChecker(cpuCoordinate):
+                self.modifyArray(cpuCoordinate, '🔴')
+                return True
+
+    def checkForWinner(self, chip):
+        # Check horizontal (left to right)
+        for row in range(self.rows):
+            for col in range(self.cols - 3):
+                if (self.gameBoard[row][col] == chip and 
+                    self.gameBoard[row][col+1] == chip and 
+                    self.gameBoard[row][col+2] == chip and 
+                    self.gameBoard[row][col+3] == chip):
+                    print(f"\nGame over {chip} wins! Thank you for playing!")
+                    return True
+        
+        # Check vertical (top to bottom)
+        for col in range(self.cols):
+            for row in range(self.rows - 3):
+                if (self.gameBoard[row][col] == chip and 
+                    self.gameBoard[row+1][col] == chip and 
+                    self.gameBoard[row+2][col] == chip and 
+                    self.gameBoard[row+3][col] == chip):
+                    print(f"\nGame over {chip} wins! Thank you for playing")
+                    return True
+
+        # Check diagonal (top-left to bottom-right)
+        for row in range(self.rows - 3):
+            for col in range(self.cols - 3):
+                if (self.gameBoard[row][col] == chip and 
+                    self.gameBoard[row+1][col+1] == chip and 
+                    self.gameBoard[row+2][col+2] == chip and 
+                    self.gameBoard[row+3][col+3] == chip):
+                    print(f"\nGame over {chip} wins! Thank you for playing")
+                    return True
+
+        # Check diagonal (top-right to bottom-left)
+        for row in range(self.rows - 3):
+            for col in range(3, self.cols):
+                if (self.gameBoard[row][col] == chip and 
+                    self.gameBoard[row+1][col-1] == chip and 
+                    self.gameBoard[row+2][col-2] == chip and 
+                    self.gameBoard[row+3][col-3] == chip):
+                    print(f"\nGame over {chip} wins! Thank you for playing")
+                    return True
+        return False
+
+    def play(self):
+            self.print_welcome()
+            
+            while True:
+                self.printGameBoard()
+                
+                if self.turnCounter % 2 == 0:
+                    self.humanTurn()
+                    winner = self.checkForWinner('🔵')
+                else:
+                    self.computerTurn()
+                    winner = self.checkForWinner('🔴')
+                
+                self.turnCounter += 1
+                
+                if winner:
+                    self.printGameBoard()
+                    break
+
+
+if __name__ == "__main__":
+    game = ConnectFour()
+    game.play()
